@@ -48,7 +48,6 @@ Data::Data(const std::string& path)
         m_RanksPoints->at(team) = days;
         team++;
     }
-    Log::Debug("Data constructed");
 }
 
 std::vector<Day> Data::getTeam(GLuint team) const {
@@ -56,7 +55,6 @@ std::vector<Day> Data::getTeam(GLuint team) const {
 }
 
 Data::~Data(){
-    Log::Debug("Data destructing");
     delete m_RanksPoints;
     Log::Debug("Data destructed");
 }

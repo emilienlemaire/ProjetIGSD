@@ -1,3 +1,3 @@
-[submodule "libs/CppLogger"]
-	path = libs/CppLogger
-	url = https://github.com/emilienlemaire/CppLogger.git
+[submodule "libs/42ngine"]
+	path = libs/42ngine
+	url = https://github.com/emilienlemaire/42ngine.git

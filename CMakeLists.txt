@@ -3,21 +3,27 @@ project(ProjetIGSD)
 
 set(CMAKE_CXX_STANDARD 14)
 
+set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake/modules")
+set(CCACHE_SLOPPINESS pch_defines,time_macros)
+include(cotire)
+
 include_directories(src)
 include_directories(libs)
 include_directories(includes)
+
+add_subdirectory(libs/CppLogger)
+add_subdirectory(libs/42ngine)
 
 add_executable(ProjetIGSD
         src/main.cpp
         includes/debugbreak.h
         includes/utils.h
         includes/constants.h
-        libs/CppLogger/src/Log.h
-        libs/CppLogger/src/Log.cpp
         src/data/Data.cpp
         src/data/Data.h
         src/data/Cylinder.cpp
         src/data/Cylinder.h)
+
 
 set( GLFW_BUILD_DOCS OFF CACHE BOOL "" FORCE )
 set( GLFW_BUILD_TESTS OFF CACHE BOOL "" FORCE )
@@ -26,8 +32,10 @@ set( GLFW_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE )
 find_path(GLEW_INCLUDE_DIR GL/glew.h)
 find_package(GLEW 2.1.0 REQUIRED)
 find_package(glfw3 3.3 REQUIRED)
+find_library(CppLogger REQUIRED)
 #find_package(OpenCV REQUIRED)
 #include_directories(${OpenCV_INCLUDE_DIRS})
 
 target_include_directories(ProjetIGSD PUBLIC ${OPENGL_INCLUDE_DIR})
-target_link_libraries(ProjetIGSD glfw GLEW::GLEW ${OPENGL_gl_LIBRARY} ${OpenCV_LIBS})
+target_link_libraries(ProjetIGSD 42ngine glfw GLEW::GLEW ${OPENGL_gl_LIBRARY} ${OpenCV_LIBS})
+cotire(ProjetIGSD)
