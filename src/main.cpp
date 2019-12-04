@@ -1,7 +1,6 @@
-
-#include <iostream>
-#include <CppLogger/Log.h>
-#include <utils.h>
+#include <Log.h>
+#include <42ngine/Window.h>
+#include <42ngine/VertexArray.h>
 
 #include <data/Data.h>
 #include <data/Cylinder.h>
@@ -10,20 +9,23 @@ int main() {
 
     Log::setLevel(Log::LevelDebug);
 
-    GLFWwindow* window = initGL(cst::i_Width, cst::i_Height);
+    Window window(1000, 700, "Projet IGSD");
+
+    window.enable(GL_DEPTH_TEST);
+    window.setDepthFunc(GL_LEQUAL, 1000.f, -10.f);
+    window.setInputMode(GLFW_STICKY_KEYS, GLFW_TRUE);
+    window.setEscapeToQuit(true);
+    window.setClearColor(1.f, 1.f, 1.f, 1.f);
 
     Data *myData = new Data("resources/data/rankspts.csv");
 
     Cylinder myCylinder(0, myData);
 
+    VertexArray va(1);
+
     std::vector<GLfloat> vector = myCylinder.makeBackface();
 
-    do {
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-        glfwSwapBuffers(window);
-        glfwPollEvents();
-    } while (!glfwWindowShouldClose(window) && glfwGetKey(window, GLFW_KEY_ESCAPE) != GLFW_PRESS);
+    window.show();
 
     delete myData;
     return 0;

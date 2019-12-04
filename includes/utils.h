@@ -10,7 +10,7 @@
 #include <GLFW/glfw3.h>
 
 #include <debugbreak.h>
-#include <CppLogger/Log.h>
+#include <42ngine/42ngine.h>
 #include <sstream>
 #include <data/Data.h>
 
