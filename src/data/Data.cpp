@@ -4,9 +4,9 @@
 #include "Data.h"
 
 
-Data::Data(const std::string& path, GLfloat t_Width, GLfloat t_Height)
-    : m_Width(t_Width), m_Height(t_Height)
+Data::Data(const std::string& path)
 {
+    Log::Debug("Data constructing");
     std::ifstream file(path);
 
     if (!file.good()){
@@ -23,10 +23,10 @@ Data::Data(const std::string& path, GLfloat t_Width, GLfloat t_Height)
         std::stringstream iss;
         iss << line;
         std::string column;
-        std::vector<Day, std::allocator<Day>> days(NB_DAYS);
+        std::vector<Day, std::allocator<Day>> days(cst::nbDays);
         //On ignore la première ligne;
         std::getline(iss, column, comma);
-        for (int i = 0; i < NB_DAYS; ++i) {
+        for (int i = 0; i < cst::nbDays; ++i) {
             Day day{};
 
             //On récupère le rang
@@ -48,12 +48,15 @@ Data::Data(const std::string& path, GLfloat t_Width, GLfloat t_Height)
         m_RanksPoints->at(team) = days;
         team++;
     }
+    Log::Debug("Data constructed");
 }
 
-std::vector<Day> *Data::getTeam(GLuint team) const {
-    return &m_RanksPoints->at(team);
+std::vector<Day> Data::getTeam(GLuint team) const {
+    return m_RanksPoints->at(team);
 }
 
 Data::~Data(){
+    Log::Debug("Data destructing");
     delete m_RanksPoints;
-};
+    Log::Debug("Data destructed");
+}

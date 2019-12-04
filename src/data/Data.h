@@ -10,19 +10,17 @@
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
 
-#include <Log/Log.h>
+#include <CppLogger/Log.h>
 
 #include <constants.h>
 
 
 class Data {
 private:
-    GLfloat m_Width;
-    GLfloat m_Height;
-    std::vector<std::vector<Day>> *m_RanksPoints = new std::vector<std::vector<Day>>(NB_TEAMS);
+    std::vector<std::vector<Day>> *m_RanksPoints = new std::vector<std::vector<Day>>(cst::nbTeams);
 public:
-    Data(const std::string& path, GLfloat t_Width, GLfloat t_Height);
+    Data(const std::string& path);
     ~Data();
 
-    std::vector<Day> *getTeam(GLuint team) const;
+    std::vector<Day> getTeam(GLuint team) const;
 };

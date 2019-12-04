@@ -12,10 +12,12 @@ add_executable(ProjetIGSD
         includes/debugbreak.h
         includes/utils.h
         includes/constants.h
-        libs/Log/Log.h
-        libs/Log/Log.cpp
+        libs/CppLogger/src/Log.h
+        libs/CppLogger/src/Log.cpp
         src/data/Data.cpp
-        src/data/Data.h)
+        src/data/Data.h
+        src/data/Cylinder.cpp
+        src/data/Cylinder.h)
 
 set( GLFW_BUILD_DOCS OFF CACHE BOOL "" FORCE )
 set( GLFW_BUILD_TESTS OFF CACHE BOOL "" FORCE )

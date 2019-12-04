@@ -10,8 +10,9 @@
 #include <GLFW/glfw3.h>
 
 #include <debugbreak.h>
-#include <Log/Log.h>
+#include <CppLogger/Log.h>
 #include <sstream>
+#include <data/Data.h>
 
 
 #define ASSERT(x) if(!(x)) debug_break();
@@ -35,8 +36,6 @@ inline void GLClearError(){
 }
 
 inline GLFWwindow * initGL(int width, int height){
-
-    Log::setLevel(Log::LevelWarn);
 
     if ( !glfwInit( ) )
     {
@@ -111,3 +110,4 @@ inline void combineArray(const GLfloat array1[], const GLfloat array2[], GLfloat
         result[size1 + j] = array2[j];
     }
 }
+
