@@ -1,6 +1,5 @@
 #include <Log.h>
-#include <42ngine/Window.h>
-#include <42ngine/VertexArray.h>
+#include <42ngine/42ngine.h>
 
 #include <data/Data.h>
 #include <data/Cylinder.h>
@@ -20,12 +19,20 @@ int main() {
     Data *myData = new Data("resources/data/rankspts.csv");
 
     Cylinder myCylinder(0, myData);
-
-    VertexArray va(1);
-
     std::vector<GLfloat> vector = myCylinder.makeBackface();
 
-    window.show();
+    VertexArray va(1);
+    va.bind(0);
+
+    Shader shader("resources/shaders/VertexShader.glsl","resources/shaders/FragmentShader.glsl");
+
+    VertexBuffer vb(1);
+    vb.bind(0);
+    vb.setData(vector.size() * sizeof(GLfloat));
+    vb.addSubData(vector);
+    va.Push<GLfloat>(3, vector.size() * sizeof(GLfloat));
+
+    window.show(shader, va);
 
     delete myData;
     return 0;
