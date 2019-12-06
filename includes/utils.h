@@ -95,7 +95,7 @@ inline GLFWwindow * initGL(int width, int height){
     return window;
 }
 
-inline void displayPoint(GLfloat array[], GLuint size){
+inline void displayPoint(std::vector<GLfloat> array, GLuint size){
     for (int i = 0; i < size; i+=3) {
         std::cout << i << " " << array[i] << " " << array[i + 1] << " " << array[i + 2] << std::endl;
     }

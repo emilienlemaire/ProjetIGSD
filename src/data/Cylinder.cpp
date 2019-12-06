@@ -4,10 +4,17 @@
 
 #include "Cylinder.h"
 
-Cylinder::Cylinder(GLuint t_TeamNumber, Data *t_Data) : m_TeamNumber(t_TeamNumber), m_Data(t_Data) {}
+Cylinder::Cylinder(int t_TeamNumber, Data *t_Data) : m_TeamNumber(t_TeamNumber), m_Data(t_Data) {
+    Log::Debug("Cylinder constructed");
+}
 
-std::vector<GLfloat> Cylinder::makeBackface() {
-    std::vector<GLfloat> backface;
+Cylinder::~Cylinder() {
+    Log::Debug("Cylinder destructed");
+}
+
+void Cylinder::makeBackface(std::vector<GLfloat>& backface) const{
+    Log::Debug("Making backface");
+    backface.clear();
 
     std::vector<Day> teamData = m_Data->getTeam(m_TeamNumber);
 
@@ -63,6 +70,5 @@ std::vector<GLfloat> Cylinder::makeBackface() {
             * (cst::f_Height / 2.2f) + cst::lineHeight);
         backface.push_back(0);
     }
-
-    return backface;
+    Log::Debug("Backface created");
 }

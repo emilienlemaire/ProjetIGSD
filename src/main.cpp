@@ -15,7 +15,7 @@ int main() {
     std::vector<GLfloat> triangle = {
             -1.f, -1.f, 0.f,
              1.f, -1.f, 0.f,
-             0.f, 1.f, 0.f
+             0.f,  1.f, 0.f
     };
 
     std::vector<GLfloat> rectangle = {
@@ -27,29 +27,29 @@ int main() {
              0.5f,  0.5f, 0.f,
     };
 
+    Data* data = new Data("resources/data/rankspts.csv");
+
     VertexArray va(2);
     va.bind(0);
 
 
-    GLuint triangle_VB0;
-    glGenBuffers(1, &triangle_VB0);
-    glBindBuffer(GL_ARRAY_BUFFER, triangle_VB0);
-
     VertexBuffer vb(2);
     vb.bind(0);
-    va.push<GLfloat>(0, 3, triangle.size() * sizeof(GLfloat));
-    vb.setData(triangle.size() * sizeof(GLfloat));
-    vb.addSubData(triangle);
+
+    std::vector<GLfloat> team0;
+    const Cylinder cylinder(0, data);
+    cylinder.makeBackface(team0);
+
+    va.push<GLfloat>(0, 3, team0.size() * sizeof(GLfloat));
+    vb.setData(team0.size() * sizeof(GLfloat));
+    vb.addSubData(team0);
 
     va.bind(1);
 
-    GLuint rectangle_VBO;
     vb.bind(1);
     va.push<GLfloat>(1, 3, rectangle.size() * sizeof(GLfloat));
     vb.setData(rectangle.size() * sizeof(GLfloat));
     vb.addSubData(rectangle);
-
-
 
     Shader shader("resources/shaders/VertexShader.glsl", "resources/shaders/FragmentShader.glsl");
 
@@ -67,10 +67,10 @@ int main() {
         }
         if (drawTriangle){
             va.bind(0);
-            glDrawArrays(GL_TRIANGLES, 0, 3);
+            glDrawArrays(GL_TRIANGLES, 0, team0.size() / 3);
         } else {
             va.bind(1);
-            glDrawArrays(GL_TRIANGLES, 0, 6);
+            glDrawArrays(GL_TRIANGLES, 0, rectangle.size() / 3);
         }
 
         va.unbind();
@@ -79,6 +79,7 @@ int main() {
         glfwSwapBuffers(window);
         glfwPollEvents();
     } while (!glfwWindowShouldClose(window) && glfwGetKey(window, GLFW_KEY_ESCAPE) != GLFW_PRESS);
+    delete data;
 
     return 0;
 }

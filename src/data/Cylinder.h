@@ -9,11 +9,12 @@
 
 class Cylinder {
 private:
-    GLuint m_TeamNumber;
+    int m_TeamNumber;
     Data* m_Data;
 public:
-    Cylinder(GLuint t_TeamNumber, Data *t_Data);
-    std::vector<GLfloat> makeBackface();
+    Cylinder(int t_TeamNumber, Data *t_Data);
+    ~Cylinder();
+    void makeBackface(std::vector<GLfloat>&) const;
 };
 
 
