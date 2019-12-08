@@ -5,80 +5,121 @@
 
 #include <data/Data.h>
 #include <data/Cylinder.h>
+#include <42ngine/src/IndexBuffer.h>
+#include <string>
 
 int main() {
 
     Log::setLevel(Log::LevelDebug);
 
-    GLFWwindow* window = initGL(1000, 700);
-
-    std::vector<GLfloat> triangle = {
-            -1.f, -1.f, 0.f,
-             1.f, -1.f, 0.f,
-             0.f,  1.f, 0.f
-    };
-
-    std::vector<GLfloat> rectangle = {
-            -0.5f, -0.5f, 0.f,
-            -0.5f,  0.5f, 0.f,
-             0.5f, -0.5f, 0.f,
-            -0.5f,  0.5f, 0.f,
-             0.5f, -0.5f, 0.f,
-             0.5f,  0.5f, 0.f,
-    };
+    GLFWwindow* window = initGL(cst::i_Width, cst::i_Height);
 
     Data* data = new Data("resources/data/rankspts.csv");
 
-    VertexArray va(2);
-    va.bind(0);
+    VertexArray va(20);
+    VertexBuffer vb(20);
+    IndexBuffer ib(20);
 
+    GLuint verticesSize[cst::nbTeams];
+    GLuint indexSize[cst::nbTeams];
 
-    VertexBuffer vb(2);
-    vb.bind(0);
+    for (int i = 0; i < cst::nbTeams; ++i) {
+        va.bind(i);
+        vb.bind(i);
+        ib.bind(i);
+        std::vector<GLfloat> team;
+        std::vector<GLubyte> indices;
+        std::vector<GLfloat> vertices;
+        const Cylinder cylinder(i, data);
+        cylinder.makeBackface(team);
+        ib.indexData(team, indices, vertices);
+        indexSize[i] = indices.size();
+        Log::Info(indices.size());
+        verticesSize[i] = vertices.size();
+        va.push<GLfloat>(i, 3, vertices.size() * sizeof(GLfloat));
+        vb.setData(vertices.size() * sizeof(GLfloat));
+        vb.addSubData(vertices);
+        ib.setData(indices.size() * sizeof(GLuint));
+        ib.addSubData(indices);
+    }
 
-    std::vector<GLfloat> team0;
-    const Cylinder cylinder(0, data);
-    cylinder.makeBackface(team0);
+    std::vector<int> test = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
 
-    va.push<GLfloat>(0, 3, team0.size() * sizeof(GLfloat));
-    vb.setData(team0.size() * sizeof(GLfloat));
-    vb.addSubData(team0);
+    Log::Info(std::to_string(test.size()));
+    Log::Info(std::to_string(test.capacity()));
 
-    va.bind(1);
+    test.reserve(test.size() + 5);
 
-    vb.bind(1);
-    va.push<GLfloat>(1, 3, rectangle.size() * sizeof(GLfloat));
-    vb.setData(rectangle.size() * sizeof(GLfloat));
-    vb.addSubData(rectangle);
+    Log::Info(std::to_string(test.size()));
+
+    Log::Info(std::to_string(test.capacity()));
+
+    int sz = test.capacity();
+
+    for (int j = 0; j < 5; ++j) {
+        test.push_back(j);
+        if(test.capacity() != sz) {
+            sz = test.capacity();
+            Log::Warn(std::to_string(test.capacity()));
+        }
+    }
+
+    for (int k : test) {
+        Log::Debug(std::to_string(k));
+    }
 
     Shader shader("resources/shaders/VertexShader.glsl", "resources/shaders/FragmentShader.glsl");
 
-    GLuint i = 0;
-    GLboolean drawTriangle = true;
-
     do {
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // NOLINT(hicpp-signed-bitwise)
         shader.bind();
-        shader.addUniformMat4("u_MVP", glm::mat4(1.f));
+        shader.addUniformMat4("u_Model", glm::mat4(1.f) * glm::translate(glm::mat4(1.f), glm::vec3(-500.f, -350.f, 0.f)));
+        shader.addUniformMat4("u_View", glm::lookAt(glm::vec3(0.0, .0, 650.f),
+            glm::vec3(0.0, 0.0, .1),
+            glm::vec3(0, 1., .0)));
+        shader.addUniformMat4("u_Projection", glm::perspective(45.f, 1000.f/700.f, -10.f, 10.f));
 
-        if(i == 1000){
-            drawTriangle = !drawTriangle;
-            i = 0;
+        for (int i = 0; i < cst::nbTeams; ++i) {
+
+        glm::vec3 color;
+            if (i == 0){
+                color.r = 0.f;
+                color.g = 72.f / 255.f;
+                color.b = 204.f / 255.f;
+            } else if (i < 4){
+                color.r = 98.f / 255.f;
+                color.g = 214.f / 255.f;
+                color.b = 230.f / 255.f;
+            } else if (i < 7) {
+                color.r = 236.f / 255.f;
+                color.g = 238.f / 255.f;
+                color.b = 26.f / 255.f;
+            } else if (i < 10) {
+                color.r = 194.f / 255.f;
+                color.g = 194.f / 255.f;
+                color.b = 194.f / 255.f;
+            } else if (i < 16){
+                color.r = 140.f / 255.f;
+                color.g = 140.f / 255.f;
+                color.b = 140.f / 255.f;
+            } else {
+                color.r = 204.f / 255.f;
+                color.g = 72.f / 255.f;
+                color.b = 0.f / 255.f;
+            }
+            va.bind(i);
+            //ib.bind(i);
+            shader.addUniform3f("u_Color", color);
+            glDrawElements(GL_TRIANGLES, indexSize[i], GL_UNSIGNED_BYTE, nullptr);
         }
-        if (drawTriangle){
-            va.bind(0);
-            glDrawArrays(GL_TRIANGLES, 0, team0.size() / 3);
-        } else {
-            va.bind(1);
-            glDrawArrays(GL_TRIANGLES, 0, rectangle.size() / 3);
-        }
+
 
         va.unbind();
         shader.unbind();
-        i++;
         glfwSwapBuffers(window);
         glfwPollEvents();
     } while (!glfwWindowShouldClose(window) && glfwGetKey(window, GLFW_KEY_ESCAPE) != GLFW_PRESS);
+
     delete data;
 
     return 0;
