@@ -1,24 +1,36 @@
 #include <Log.h>
 #include <42ngine/42ngine.h>
 
-#include <utils.h>
-
 #include <data/Data.h>
 #include <data/Cylinder.h>
-#include <42ngine/src/IndexBuffer.h>
 #include <string>
 
 int main() {
 
     Log::setLevel(Log::LevelDebug);
 
-    GLFWwindow* window = initGL(cst::i_Width, cst::i_Height);
+    auto* app = new ftn::Application();
+
+    auto* window = new ftn::Window(cst::i_Width, cst::i_Height, "Projet IGSD");
+
+    app->enable(GL_DEPTH_TEST);
+    app->setDepthFunc(GL_LEQUAL, 1000.f, -10.f);
+
+    window->setInputMode(GLFW_STICKY_KEYS, GLFW_TRUE);
+    window->setInputMode(GLFW_STICKY_MOUSE_BUTTONS, GLFW_TRUE);
+    window->setInputMode(GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+
+    window->setVSync(true);
+    window->setEscapeToQuit(true);
+
+    app->setClearColor(1.0f, 1.0f, 1.0f, 1.0f);
+    app->setWindow(window);
 
     Data* data = new Data("resources/data/rankspts.csv");
 
-    VertexArray va(20);
-    VertexBuffer vb(20);
-    IndexBuffer ib(20);
+    ftn::VertexArray va(20);
+    ftn::VertexBuffer vb(20);
+    ftn::IndexBuffer ib(20);
 
     GLuint verticesSize[cst::nbTeams];
     GLuint indexSize[cst::nbTeams];
@@ -39,39 +51,15 @@ int main() {
         va.push<GLfloat>(i, 3, vertices.size() * sizeof(GLfloat));
         vb.setData(vertices.size() * sizeof(GLfloat));
         vb.addSubData(vertices);
-        ib.setData(indices.size() * sizeof(GLuint));
+        ib.setData(indices.size() * sizeof(GLubyte));
         ib.addSubData(indices);
     }
 
-    std::vector<int> test = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
-
-    Log::Info(std::to_string(test.size()));
-    Log::Info(std::to_string(test.capacity()));
-
-    test.reserve(test.size() + 5);
-
-    Log::Info(std::to_string(test.size()));
-
-    Log::Info(std::to_string(test.capacity()));
-
-    int sz = test.capacity();
-
-    for (int j = 0; j < 5; ++j) {
-        test.push_back(j);
-        if(test.capacity() != sz) {
-            sz = test.capacity();
-            Log::Warn(std::to_string(test.capacity()));
-        }
-    }
-
-    for (int k : test) {
-        Log::Debug(std::to_string(k));
-    }
-
-    Shader shader("resources/shaders/VertexShader.glsl", "resources/shaders/FragmentShader.glsl");
+    ftn::Shader shader("resources/shaders/VertexShader.glsl", "resources/shaders/FragmentShader.glsl");
+    ftn::Renderer renderer(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // NOLINT(hicpp-signed-bitwise)
 
     do {
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); // NOLINT(hicpp-signed-bitwise)
+        renderer.clear();
         shader.bind();
         shader.addUniformMat4("u_Model", glm::mat4(1.f) * glm::translate(glm::mat4(1.f), glm::vec3(-500.f, -350.f, 0.f)));
         shader.addUniformMat4("u_View", glm::lookAt(glm::vec3(0.0, .0, 650.f),
@@ -108,7 +96,7 @@ int main() {
                 color.b = 0.f / 255.f;
             }
             va.bind(i);
-            //ib.bind(i);
+            ib.bind(i);
             shader.addUniform3f("u_Color", color);
             glDrawElements(GL_TRIANGLES, indexSize[i], GL_UNSIGNED_BYTE, nullptr);
         }
@@ -116,11 +104,11 @@ int main() {
 
         va.unbind();
         shader.unbind();
-        glfwSwapBuffers(window);
-        glfwPollEvents();
-    } while (!glfwWindowShouldClose(window) && glfwGetKey(window, GLFW_KEY_ESCAPE) != GLFW_PRESS);
+        window->update();
+    } while (!window->shouldClose());
 
     delete data;
-
+    delete window;
+    delete app;
     return 0;
 }

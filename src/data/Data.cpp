@@ -4,13 +4,13 @@
 #include "Data.h"
 
 
-Data::Data(const std::string& path)
+Data::Data(const std::string& t_Path)
 {
     Log::Debug("Data constructing");
-    std::ifstream file(path);
+    std::ifstream file(t_Path);
 
     if (!file.good()){
-        Log::Error("The file " + path + " couldn't be open");
+        Log::Error("The file " + t_Path + " couldn't be open");
         std::exit(EXIT_FAILURE);
     }
 
@@ -50,8 +50,8 @@ Data::Data(const std::string& path)
     }
 }
 
-std::vector<Day> Data::getTeam(GLuint team) const {
-    return m_RanksPoints->at(team);
+std::vector<Day> Data::getTeam(GLuint t_Team) const {
+    return m_RanksPoints->at(t_Team);
 }
 
 Data::~Data(){

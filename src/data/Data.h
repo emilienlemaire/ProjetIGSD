@@ -19,8 +19,8 @@ class Data {
 private:
     std::vector<std::vector<Day>> *m_RanksPoints = new std::vector<std::vector<Day>>(cst::nbTeams);
 public:
-    Data(const std::string& path);
+    explicit Data(const std::string& T_Path);
     ~Data();
 
-    std::vector<Day> getTeam(GLuint team) const;
+    std::vector<Day> getTeam(GLuint t_Team) const;
 };
