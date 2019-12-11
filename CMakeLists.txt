@@ -7,9 +7,9 @@ set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake/modules")
 set(CCACHE_SLOPPINESS pch_defines,time_macros)
 include(cotire)
 
-set(INCLUDE_DIRECTORIES src includes libs)
-
 add_subdirectory(libs/42ngine)
+
+set(INCLUDE_DIRECTORIES src includes libs)
 
 add_executable(ProjetIGSD
         src/main.cpp
@@ -21,17 +21,28 @@ add_executable(ProjetIGSD
         src/data/Cylinder.cpp
         src/data/Cylinder.h)
 
-
-set( GLFW_BUILD_DOCS OFF CACHE BOOL "" FORCE )
-set( GLFW_BUILD_TESTS OFF CACHE BOOL "" FORCE )
-set( GLFW_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE )
-
-find_path(GLEW_INCLUDE_DIR GL/glew.h)
-find_package(GLEW 2.1.0 REQUIRED)
-find_package(glfw3 3.3 REQUIRED)
 find_package(CppLogger REQUIRED)
 #find_package(OpenCV REQUIRED)
 
-target_include_directories(ProjetIGSD PUBLIC ${CPPLOGGER_INCLUDE_DIR} ${OPENGL_INCLUDE_DIR} ${INCLUDE_DIRECTORIES})
-target_link_libraries(ProjetIGSD glfw GLEW::GLEW ${OPENGL_gl_LIBRARY} ${OpenCV_LIBS} ${CPPLOGGER_LIBRARY} 42ngine)
+target_include_directories(ProjetIGSD PUBLIC ${CPPLOGGER_INCLUDE_DIR} ${INCLUDE_DIRECTORIES})
+target_link_libraries(ProjetIGSD ${CPPLOGGER_LIBRARY} 42ngine imgui)
+
+add_executable(ProjetIGSDApp MACOSX_BUNDLE
+        src/main.cpp
+        src/data/Data.cpp
+        src/data/Data.h
+        src/data/Cylinder.cpp
+        src/data/Cylinder.h
+        resources/data/rankspts.csv)
+
+set_source_files_properties(
+  resources/data/rankspts.csv
+  PROPERTIES
+  MACOSX_PACKAGE_LOCATION Resources
+  )
+
+
+target_include_directories(ProjetIGSDApp PUBLIC ${CPPLOGGER_INCLUDE_DIR} ${INCLUDE_DIRECTORIES})
+target_link_libraries(ProjetIGSDApp ${CPPLOGGER_LIBRARY} 42ngine imgui)
+include(CPack)
 cotire(ProjetIGSD)

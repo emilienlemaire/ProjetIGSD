@@ -5,16 +5,17 @@
 #pragma once
 
 namespace cst {
-    const int nbTeams = 20;
-    const int nbDays = 40;
+    const int NB_TEAMS = 20;
+    const int NB_DAYS = 40;
+    const int I_WIDTH = 1000;
+    const int I_HEIGHT = 700;
+    const int CYLINDER_DIVISION = 25;
 
-    const int i_Width = 1000;
-    const int i_Height = 700;
+    const float F_WIDTH = 1000.f;
+    const float F_HEIGHT = 700.f;
+    const float LINE_HEIGHT = (F_HEIGHT / 20.f) / 2.f;
+    const float MAX_POINTS = 92.f;
 
-    const float f_Width = 1000.f;
-    const float f_Height = 700.f;
-    const float lineHeight = (f_Height / 20.f) / 2.f;
-    const float maxPoints = 92.f;
 }
 
 struct Day{

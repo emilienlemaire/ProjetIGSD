@@ -23,10 +23,10 @@ Data::Data(const std::string& t_Path)
         std::stringstream iss;
         iss << line;
         std::string column;
-        std::vector<Day, std::allocator<Day>> days(cst::nbDays);
+        std::vector<Day, std::allocator<Day>> days(cst::NB_DAYS);
         //On ignore la première ligne;
         std::getline(iss, column, comma);
-        for (int i = 0; i < cst::nbDays; ++i) {
+        for (int i = 0; i < cst::NB_DAYS; ++i) {
             Day day{};
 
             //On récupère le rang
