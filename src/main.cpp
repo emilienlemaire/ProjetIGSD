@@ -126,6 +126,17 @@ int main() {
 
     GLuint vao, vbo, ibo;
 
+    ///-- Non implémenté --//////////////////////////////////////////////////////
+    ftn::BufferLayout bl = {
+            {"in_Position", ftn::BufferType::Float3},
+            {"in_Normals", ftn::BufferType::Float3},
+            {"in_Depth", ftn::BufferType::Float3}
+    };
+
+    ftn::VertexArray(nb, BufferLayout);
+    ftn::VertexBuffer<GLfloat>(nb, data);
+    ftn::IndexBuffer(nb, data);
+    /////////////////////////////////////////////////////////////////////////////
     glGenVertexArrays(1, &vao);
     glGenBuffers(1, &vbo);
     glGenBuffers(1, &ibo);
@@ -178,6 +189,12 @@ int main() {
             GL_STATIC_DRAW
     );
 
+
+    ///--Pour la selection de l'equipe--////////////////////////////////////////////////////
+    Rederer (va);
+    ftn::Renderer::SetTransform(idx, transform);
+    ftn::Renderer::DisableTransform(idx);
+    ////////////////////////////////////////////////////////////////////////////////////////
     glm::mat4 model(1.f);
     ftn::Shader shader("resources/shaders/VertexShader.glsl", "resources/shaders/FragmentShader.glsl");
 
