@@ -12,10 +12,12 @@ Cylinder::~Cylinder() {
     Log::Debug("Cylinder destructed");
 }
 
-void Cylinder::makeBackface(std::vector<GLfloat>& t_Backface) const{
+void Cylinder::makeBackface(std::vector<GLfloat> &t_Backface, std::vector<GLfloat> &t_Depth) const{
     t_Backface.clear();
+    t_Depth.clear();
     std::vector<Day> teamData = m_Data->getTeam(m_TeamNumber);
     t_Backface.reserve(2 * teamData.size() * 18 - 18);
+    t_Depth.reserve(teamData.size() * 12 - 6);
 
     GLfloat largeur = (cst::F_WIDTH - 50.f) / (cst::NB_DAYS * 2.f);
     GLfloat dx = 50.f;
@@ -30,6 +32,7 @@ void Cylinder::makeBackface(std::vector<GLfloat>& t_Backface) const{
         t_Backface.push_back(
                 (((19.f - (float) day.rank) / 19.f) + ((float) day.points / cst::MAX_POINTS)) * (cst::F_HEIGHT / 2.2f));
         t_Backface.push_back(0);
+        t_Depth.push_back(0);
 
         //Haut gauche
         t_Backface.push_back(dx + (2.f * (float) i) * largeur);
@@ -37,6 +40,7 @@ void Cylinder::makeBackface(std::vector<GLfloat>& t_Backface) const{
                 (((19.f - (float) day.rank) / 19.f) + ((float) day.points / cst::MAX_POINTS)) * (cst::F_HEIGHT / 2.2f) +
                 cst::LINE_HEIGHT);
         t_Backface.push_back(0);
+        t_Depth.push_back(0);
 
 
         //Bas droite
@@ -44,6 +48,7 @@ void Cylinder::makeBackface(std::vector<GLfloat>& t_Backface) const{
         t_Backface.push_back(
                 (((19.f - (float) day.rank) / 19.f) + ((float) day.points / cst::MAX_POINTS)) * (cst::F_HEIGHT / 2.2f));
         t_Backface.push_back(0);
+        t_Depth.push_back(0);
 
 
         //Triangle 2
@@ -52,6 +57,7 @@ void Cylinder::makeBackface(std::vector<GLfloat>& t_Backface) const{
         t_Backface.push_back(
                 (((19.f - (float) day.rank) / 19.f) + ((float) day.points / cst::MAX_POINTS)) * (cst::F_HEIGHT / 2.2f));
         t_Backface.push_back(0);
+        t_Depth.push_back(0);
 
 
         //Haut gauche
@@ -60,6 +66,7 @@ void Cylinder::makeBackface(std::vector<GLfloat>& t_Backface) const{
                 (((19.f - (float) day.rank) / 19.f) + ((float) day.points / cst::MAX_POINTS)) * (cst::F_HEIGHT / 2.2f) +
                 cst::LINE_HEIGHT);
         t_Backface.push_back(0);
+        t_Depth.push_back(0);
 
         //Haut droite
         t_Backface.push_back(dx + (2.f * (float) i + 1.f) * largeur);
@@ -67,30 +74,36 @@ void Cylinder::makeBackface(std::vector<GLfloat>& t_Backface) const{
                 (((19.f - (float) day.rank) / 19.f) + ((float) day.points / cst::MAX_POINTS)) * (cst::F_HEIGHT / 2.2f) +
                 cst::LINE_HEIGHT);
         t_Backface.push_back(0);
+        t_Depth.push_back(0);
+
         if (i != teamData.size() - 1){
-            GLfloat z = 0.f;
-            if (nextDay.rank > day.rank) z = -0.1f;
+            unsigned short depth = 0;
+            if(nextDay.rank > day.rank)
+                depth = 1;
             //Connexion suivant
             //Triangle 1
             //Bas gauche
             t_Backface.push_back(dx + (2.f * (float) i + 1.f) * largeur);
             t_Backface.push_back(
                     (((19.f - (float) day.rank) / 19.f) + ((float) day.points / cst::MAX_POINTS)) * (cst::F_HEIGHT / 2.2f));
-            t_Backface.push_back(z);
+            t_Backface.push_back(0);
+            t_Depth.push_back(depth);
 
             //Haut gauche
             t_Backface.push_back(dx + (2.f * (float) i + 1.f) * largeur);
             t_Backface.push_back(
                     (((19.f - (float) day.rank) / 19.f) + ((float) day.points / cst::MAX_POINTS)) * (cst::F_HEIGHT / 2.2f) +
                     cst::LINE_HEIGHT);
-            t_Backface.push_back(z);
+            t_Backface.push_back(0);
+            t_Depth.push_back(depth);
 
 
             //Bas droite
             t_Backface.push_back(dx + (2.f * (float) i + 2.f) * largeur);
             t_Backface.push_back((((19.f - (float) nextDay.rank) / 19.f) + ((float) nextDay.points / cst::MAX_POINTS)) *
                                  (cst::F_HEIGHT / 2.2f));
-            t_Backface.push_back(z);
+            t_Backface.push_back(0);
+            t_Depth.push_back(depth);
 
 
             //Triangle 2
@@ -98,7 +111,8 @@ void Cylinder::makeBackface(std::vector<GLfloat>& t_Backface) const{
             t_Backface.push_back(dx + (2.f * (float) i + 2.f) * largeur);
             t_Backface.push_back((((19.f - (float) nextDay.rank) / 19.f) + ((float) nextDay.points / cst::MAX_POINTS)) *
                                  (cst::F_HEIGHT / 2.2f));
-            t_Backface.push_back(z);
+            t_Backface.push_back(0);
+            t_Depth.push_back(depth);
 
 
             //Haut gauche
@@ -106,23 +120,24 @@ void Cylinder::makeBackface(std::vector<GLfloat>& t_Backface) const{
             t_Backface.push_back(
                     (((19.f - (float) day.rank) / 19.f) + ((float) day.points / cst::MAX_POINTS)) * (cst::F_HEIGHT / 2.2f) +
                     cst::LINE_HEIGHT);
-            t_Backface.push_back(z);
+            t_Backface.push_back(0);
+            t_Depth.push_back(depth);
 
             //Haut droite
             t_Backface.push_back(dx + (2.f * (float) i + 2.f) * largeur);
             t_Backface.push_back((((19.f - (float) nextDay.rank) / 19.f) + ((float) nextDay.points / cst::MAX_POINTS)) *
                                  (cst::F_HEIGHT / 2.2f) + cst::LINE_HEIGHT);
-            t_Backface.push_back(z);
+            t_Backface.push_back(0);
+            t_Depth.push_back(depth);
         }
     }
 }
 
-void Cylinder::makeCylinder(std::vector<GLfloat> &t_Cylinder) const {
+void Cylinder::makeCylinder(std::vector<GLfloat> &t_Cylinder, std::vector<GLfloat> &t_Depth) const {
 
-    makeBackface(t_Cylinder);
+    makeBackface(t_Cylinder, t_Depth);
 
     t_Cylinder.reserve(t_Cylinder.size() + 4 * (9 * cst::CYLINDER_DIVISION) + 2 * (cst::NB_DAYS * cst::CYLINDER_DIVISION * 2 * 9) - 4 * 18);
-    GLuint cap = t_Cylinder.capacity();
 
     GLfloat radius = glm::abs(t_Cylinder[1] - t_Cylinder[4]) / 2.f;
     GLfloat angle = glm::pi<GLfloat>() / (GLfloat)cst::CYLINDER_DIVISION;
@@ -136,15 +151,17 @@ void Cylinder::makeCylinder(std::vector<GLfloat> &t_Cylinder) const {
         t_Cylinder.push_back(xCenter);
         t_Cylinder.push_back(yCenter);
         t_Cylinder.push_back(0.f);
-
+        t_Depth.push_back(0);
 
         t_Cylinder.push_back(xCenter);
         t_Cylinder.push_back(yCenter + radius * glm::cos((float)(i) * angle));
         t_Cylinder.push_back(radius * glm::sin((float) i * angle));
+        t_Depth.push_back(0);
 
         t_Cylinder.push_back(xCenter);
         t_Cylinder.push_back(yCenter + radius * glm::cos((float) (i + 1) * angle));
         t_Cylinder.push_back(radius * glm::sin((float) (i + 1) * angle));
+        t_Depth.push_back(0);
     }
 
     //Cercle partie gauche centre
@@ -157,15 +174,18 @@ void Cylinder::makeCylinder(std::vector<GLfloat> &t_Cylinder) const {
         t_Cylinder.push_back(xCenter);
         t_Cylinder.push_back(yCenter);
         t_Cylinder.push_back(0.f);
+        t_Depth.push_back(0);
 
 
         t_Cylinder.push_back(xCenter);
         t_Cylinder.push_back(yCenter + radius * glm::cos((float)(i) * angle));
         t_Cylinder.push_back(radius * glm::sin((float) i * angle));
+        t_Depth.push_back(0);
 
         t_Cylinder.push_back(xCenter);
         t_Cylinder.push_back(yCenter + radius * glm::cos((float) (i + 1) * angle));
         t_Cylinder.push_back(radius * glm::sin((float) (i + 1) * angle));
+        t_Depth.push_back(0);
     }
 
     //Cercle partie droite centre
@@ -178,15 +198,18 @@ void Cylinder::makeCylinder(std::vector<GLfloat> &t_Cylinder) const {
         t_Cylinder.push_back(xCenter);
         t_Cylinder.push_back(yCenter);
         t_Cylinder.push_back(0.f);
+        t_Depth.push_back(0);
 
 
         t_Cylinder.push_back(xCenter);
         t_Cylinder.push_back(yCenter + radius * glm::cos((float)(i) * angle));
         t_Cylinder.push_back(radius * glm::sin((float) i * angle));
+        t_Depth.push_back(0);
 
         t_Cylinder.push_back(xCenter);
         t_Cylinder.push_back(yCenter + radius * glm::cos((float) (i + 1) * angle));
         t_Cylinder.push_back(radius * glm::sin((float) (i + 1) * angle));
+        t_Depth.push_back(0);
     }
 
     //Cercle partie droite extrémité
@@ -199,15 +222,18 @@ void Cylinder::makeCylinder(std::vector<GLfloat> &t_Cylinder) const {
         t_Cylinder.push_back(xCenter);
         t_Cylinder.push_back(yCenter);
         t_Cylinder.push_back(0.f);
+        t_Depth.push_back(0);
 
 
         t_Cylinder.push_back(xCenter);
         t_Cylinder.push_back(yCenter + radius * glm::cos((float)(i) * angle));
         t_Cylinder.push_back(radius * glm::sin((float) i * angle));
+        t_Depth.push_back(0);
 
         t_Cylinder.push_back(xCenter);
         t_Cylinder.push_back(yCenter + radius * glm::cos((float) (i + 1) * angle));
         t_Cylinder.push_back(radius * glm::sin((float) (i + 1) * angle));
+        t_Depth.push_back(0);
     }
 
     //Corps du cylindre
@@ -228,7 +254,6 @@ void Cylinder::makeCylinder(std::vector<GLfloat> &t_Cylinder) const {
         GLfloat yBas = (((19.f - (float) day.rank) / 19.f) + ((float) day.points / cst::MAX_POINTS)) * (cst::F_HEIGHT / 2.2f);
         GLfloat yHaut = (((19.f - (float) day.rank) / 19.f) + ((float) day.points / cst::MAX_POINTS)) * (cst::F_HEIGHT / 2.2f) + cst::LINE_HEIGHT;
         yCenter = (yHaut + yBas) /  2.f;
-        GLfloat z = 0;
 
         for (int j = 0; j < cst::CYLINDER_DIVISION ; ++j) {
             //Triangle 1
@@ -236,32 +261,38 @@ void Cylinder::makeCylinder(std::vector<GLfloat> &t_Cylinder) const {
             t_Cylinder.push_back(xGauche);
             t_Cylinder.push_back(yCenter + radius * glm::cos((float)j * angle));
             t_Cylinder.push_back(radius * glm::sin((float)j * angle));
+            t_Depth.push_back(0);
 
             //Haut gauche
             t_Cylinder.push_back(xGauche);
             t_Cylinder.push_back(yCenter + radius * glm::cos((float)(j + 1) * angle));
             t_Cylinder.push_back(radius * glm::sin((float)(j + 1) * angle));
+            t_Depth.push_back(0);
 
             //Bas droite
             t_Cylinder.push_back(xDroit);
             t_Cylinder.push_back(yCenter + radius * glm::cos((float)j * angle));
             t_Cylinder.push_back(radius * glm::sin((float)j * angle));
+            t_Depth.push_back(0);
 
             //Triangle 2
             //Haut gauche
             t_Cylinder.push_back(xGauche);
             t_Cylinder.push_back(yCenter + radius * glm::cos((float)(j + 1) * angle));
             t_Cylinder.push_back(radius * glm::sin((float)(j + 1) * angle));
+            t_Depth.push_back(0);
 
             //Bas droite
             t_Cylinder.push_back(xDroit);
             t_Cylinder.push_back(yCenter + radius * glm::cos((float)(j + 1) * angle));
             t_Cylinder.push_back(radius * glm::sin((float)(j + 1) * angle));
+            t_Depth.push_back(0);
 
             //Haut droite
             t_Cylinder.push_back(xDroit);
             t_Cylinder.push_back(yCenter + radius * glm::cos((float)j * angle));
             t_Cylinder.push_back(radius * glm::sin((float)j * angle));
+            t_Depth.push_back(0);
         }
 
         //Connexion avec le jour suivant
@@ -280,35 +311,42 @@ void Cylinder::makeCylinder(std::vector<GLfloat> &t_Cylinder) const {
             GLfloat yBasDroit = (((19.f - (float) nextDay.rank) / 19.f) + ((float) nextDay.points / cst::MAX_POINTS)) * (cst::F_HEIGHT / 2.2f);
             GLfloat yCentreDroit = (yHautDroit + yBasDroit) / 2.f;
 
-            z = (float)(nextDay.rank - day.rank) * -0.5f;
-            if (nextDay.rank > day.rank) z = (float)(nextDay.rank - day.rank) * -0.5f;
+            unsigned short depth = 0;
+            if( nextDay.rank > day.rank)
+                depth = 1;
 
             for (int j = 0; j < cst::CYLINDER_DIVISION; ++j) {
                 //Triangle 1
                 t_Cylinder.push_back(xGauche);
                 t_Cylinder.push_back(yCentreGauche + radius * glm::cos((float)j * angle));
-                t_Cylinder.push_back(z + radius * glm::sin((float)j * angle));
+                t_Cylinder.push_back(radius * glm::sin((float)j * angle));
+                t_Depth.push_back(depth);
 
                 t_Cylinder.push_back(xGauche);
                 t_Cylinder.push_back(yCentreGauche + radius * glm::cos((float)(j + 1) * angle));
-                t_Cylinder.push_back(z + radius * glm::sin((float)(j + 1) * angle));
+                t_Cylinder.push_back(radius * glm::sin((float)(j + 1) * angle));
+                t_Depth.push_back(depth);
 
                 t_Cylinder.push_back(xDroit);
                 t_Cylinder.push_back(yCentreDroit + radius * glm::cos((float)j * angle));
-                t_Cylinder.push_back(z + radius * glm::sin((float)j * angle));
+                t_Cylinder.push_back(radius * glm::sin((float)j * angle));
+                t_Depth.push_back(depth);
 
                 //Triangle 2
                 t_Cylinder.push_back(xGauche);
                 t_Cylinder.push_back(yCentreGauche + radius * glm::cos((float)(j + 1) * angle));
-                t_Cylinder.push_back(z + radius * glm::sin((float)(j + 1) * angle));
+                t_Cylinder.push_back(radius * glm::sin((float)(j + 1) * angle));
+                t_Depth.push_back(depth);
 
                 t_Cylinder.push_back(xDroit);
                 t_Cylinder.push_back(yCentreDroit + radius * glm::cos((float)(j + 1) * angle));
-                t_Cylinder.push_back(z + radius * glm::sin((float)(j + 1) * angle));
+                t_Cylinder.push_back(radius * glm::sin((float)(j + 1) * angle));
+                t_Depth.push_back(depth);
 
                 t_Cylinder.push_back(xDroit);
                 t_Cylinder.push_back(yCentreDroit + radius * glm::cos((float)j * angle));
-                t_Cylinder.push_back(z + radius * glm::sin((float)j * angle));
+                t_Cylinder.push_back(radius * glm::sin((float)j * angle));
+                t_Depth.push_back(depth);
             }
         }
     }
@@ -364,5 +402,22 @@ void Cylinder::makeNormals(const std::vector<GLfloat> &t_Cylinder, std::vector<G
             t_OutNormals.push_back(normal.y);
             t_OutNormals.push_back(normal.z);
         }
+    }
+}
+
+void Cylinder::combineCylinder(const std::vector<GLfloat> &t_Cylinder, const std::vector<GLfloat> &t_Normals,
+                               const std::vector<GLfloat> &t_Depth, std::vector<GLfloat>& t_OutData) {
+    t_OutData.clear();
+    t_OutData.reserve(t_Cylinder.size() + t_Normals.size() + t_Depth.size());
+    for (int i = 0; i < t_Cylinder.size(); i += 3) {
+        t_OutData.push_back(t_Cylinder[i + 0]);
+        t_OutData.push_back(t_Cylinder[i + 1]);
+        t_OutData.push_back(t_Cylinder[i + 2]);
+
+        t_OutData.push_back(t_Normals[i + 0]);
+        t_OutData.push_back(t_Normals[i + 1]);
+        t_OutData.push_back(t_Normals[i + 2]);
+
+        t_OutData.push_back(t_Depth[i / 3]);
     }
 }

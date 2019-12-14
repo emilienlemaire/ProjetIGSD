@@ -9,7 +9,7 @@ namespace cst {
     const int NB_DAYS = 40;
     const int I_WIDTH = 1000;
     const int I_HEIGHT = 700;
-    const int CYLINDER_DIVISION = 25;
+    const int CYLINDER_DIVISION = 150;
 
     const float F_WIDTH = 1000.f;
     const float F_HEIGHT = 700.f;

@@ -1724,7 +1724,7 @@ function (cotire_add_pch_compilation_flags _language _compilerID _compilerVersio
 			# /TC process all source or unrecognized file types as C source files
 			# /TP process all source or unrecognized file types as C++ source files
 			# /Zs syntax check only
-			# /Wpch-messages enable diagnostics related to pre-compiled headers (requires Intel XE 2013 Update 2)
+			# /Wpch-messages Enable diagnostics related to pre-compiled headers (requires Intel XE 2013 Update 2)
 			set (_sourceFileTypeC "/TC")
 			set (_sourceFileTypeCXX "/TP")
 			if (_flags)
@@ -1747,7 +1747,7 @@ function (cotire_add_pch_compilation_flags _language _compilerID _compilerVersio
 			# -pch-create name of the precompiled header (PCH) to create
 			# -Kc++ process all source or unrecognized file types as C++ source files
 			# -fsyntax-only check only for correct syntax
-			# -Wpch-messages enable diagnostics related to pre-compiled headers (requires Intel XE 2013 Update 2)
+			# -Wpch-messages Enable diagnostics related to pre-compiled headers (requires Intel XE 2013 Update 2)
 			get_filename_component(_pchDir "${_pchFile}" DIRECTORY)
 			get_filename_component(_pchName "${_pchFile}" NAME)
 			set (_xLanguage_C "c-header")
@@ -1872,7 +1872,7 @@ function (cotire_add_prefix_pch_inclusion_flags _language _compilerID _compilerV
 			# /Yu use a precompiled header (PCH) file
 			# /Fp specify a path or file name for precompiled header files
 			# /FI tells the preprocessor to include a specified file name as the header file
-			# /Wpch-messages enable diagnostics related to pre-compiled headers (requires Intel XE 2013 Update 2)
+			# /Wpch-messages Enable diagnostics related to pre-compiled headers (requires Intel XE 2013 Update 2)
 			if (_pchFile)
 				file (TO_NATIVE_PATH "${_pchFile}" _pchFileNative)
 				if (_flags)
@@ -1903,7 +1903,7 @@ function (cotire_add_prefix_pch_inclusion_flags _language _compilerID _compilerV
 			# -pch-dir location for precompiled header files
 			# -pch-use name of the precompiled header (PCH) to use
 			# -include process include file as the first line of the primary source file
-			# -Wpch-messages enable diagnostics related to pre-compiled headers (requires Intel XE 2013 Update 2)
+			# -Wpch-messages Enable diagnostics related to pre-compiled headers (requires Intel XE 2013 Update 2)
 			if (_pchFile)
 				get_filename_component(_pchDir "${_pchFile}" DIRECTORY)
 				get_filename_component(_pchName "${_pchFile}" NAME)
@@ -3309,7 +3309,7 @@ function (cotire_setup_unity_build_target _languages _configurations _target)
 			set_property(TARGET ${_unityTargetName} PROPERTY ENABLE_EXPORTS TRUE)
 		endif()
 	endif()
-	# enable parallel compilation for MSVC
+	# Enable parallel compilation for MSVC
 	if (MSVC AND "${CMAKE_GENERATOR}" MATCHES "Visual Studio")
 		list (LENGTH _unityTargetSources _numberOfUnityTargetSources)
 		if (_numberOfUnityTargetSources GREATER 1)
@@ -3784,7 +3784,7 @@ else()
 		if (DEFINED COTIRE_MAXIMUM_NUMBER_OF_UNITY_INCLUDES)
 			set (COTIRE_MAXIMUM_NUMBER_OF_UNITY_INCLUDES_INIT ${COTIRE_MAXIMUM_NUMBER_OF_UNITY_INCLUDES})
 		elseif ("${CMAKE_GENERATOR}" MATCHES "JOM|Ninja|Visual Studio")
-			# enable parallelization for generators that run multiple jobs by default
+			# Enable parallelization for generators that run multiple jobs by default
 			set (COTIRE_MAXIMUM_NUMBER_OF_UNITY_INCLUDES_INIT "-j")
 		else()
 			set (COTIRE_MAXIMUM_NUMBER_OF_UNITY_INCLUDES_INIT "0")
