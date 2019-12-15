@@ -408,7 +408,7 @@ void Cylinder::makeNormals(const std::vector<GLfloat> &t_Cylinder, std::vector<G
 void Cylinder::combineCylinder(const std::vector<GLfloat> &t_Cylinder, const std::vector<GLfloat> &t_Normals,
                                const std::vector<GLfloat> &t_Depth, std::vector<GLfloat>& t_OutData) {
     t_OutData.clear();
-    t_OutData.reserve(t_Cylinder.size() + t_Normals.size() + t_Depth.size());
+    t_OutData.reserve(t_Cylinder.size() + t_Normals.size());
     for (int i = 0; i < t_Cylinder.size(); i += 3) {
         t_OutData.push_back(t_Cylinder[i + 0]);
         t_OutData.push_back(t_Cylinder[i + 1]);

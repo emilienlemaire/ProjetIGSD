@@ -50,7 +50,7 @@ Data::Data(const std::string& t_Path)
     }
 }
 
-std::vector<Day> Data::getTeam(GLuint t_Team) const {
+std::vector<Day> Data::getTeam(unsigned int t_Team) const {
     return m_RanksPoints->at(t_Team);
 }
 
