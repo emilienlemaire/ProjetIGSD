@@ -18,15 +18,18 @@ public:
 
     ~Cylinder();
 
-    void makeBackface(std::vector<GLfloat> &t_Backface, std::vector<GLfloat> &t_Depth) const;
+    void makeBackface(std::vector<GLfloat> &t_Backface, std::vector<GLfloat> &t_Depth,
+                      std::vector<GLfloat> &t_Texture) const;
 
-    void makeCylinder(std::vector<GLfloat> &t_Cylinder, std::vector<GLfloat> &t_Depth) const;
+    void makeCylinder(std::vector<GLfloat> &t_Cylinder, std::vector<GLfloat> &t_Depth,
+                      std::vector<GLfloat> &t_Texture) const;
 
-    void makeNormals(const std::vector<GLfloat>& t_Cylinder, std::vector<GLfloat>& t_OutNormals) const;
+    static void makeNormals(const std::vector<GLfloat>& t_Cylinder, std::vector<GLfloat>& t_OutNormals) ;
 
     static void combineCylinder(const std::vector<GLfloat>& t_Cylinder,
             const std::vector<GLfloat>& t_Normals,
             const std::vector<GLfloat>& t_Depth,
+            const std::vector<GLfloat>& t_Texture,
             std::vector<GLfloat>& t_OutData);
 };
 

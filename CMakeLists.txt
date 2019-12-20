@@ -9,7 +9,10 @@ include(cotire)
 
 add_subdirectory(libs/42ngine)
 
-set(INCLUDE_DIRECTORIES src includes libs)
+set(INCLUDE_DIRECTORIES src includes libs /usr/local/Cellar/opencv@2/2.4.13.7_5/include)
+set(OPENCV_LIBS /usr/local/Cellar/opencv@2/2.4.13.7_5/lib/libopencv_core.dylib
+        /usr/local/Cellar/opencv@2/2.4.13.7_5/lib/libopencv_imgproc.dylib
+        /usr/local/Cellar/opencv@2/2.4.13.7_5/lib/libopencv_highgui.dylib)
 
 add_executable(ProjetIGSD
         src/main.cpp
@@ -22,10 +25,9 @@ add_executable(ProjetIGSD
         src/data/Cylinder.h)
 
 find_package(CppLogger REQUIRED)
-#find_package(OpenCV REQUIRED)
 
 target_include_directories(ProjetIGSD PUBLIC ${CPPLOGGER_INCLUDE_DIR} ${INCLUDE_DIRECTORIES})
-target_link_libraries(ProjetIGSD ${CPPLOGGER_LIBRARY} 42ngine imgui)
+target_link_libraries(ProjetIGSD ${CPPLOGGER_LIBRARY} ${OPENCV_LIBS} 42ngine imgui)
 
 add_executable(ProjetIGSDApp MACOSX_BUNDLE
         src/main.cpp
@@ -41,8 +43,7 @@ set_source_files_properties(
   MACOSX_PACKAGE_LOCATION Resources
   )
 
-
 target_include_directories(ProjetIGSDApp PUBLIC ${CPPLOGGER_INCLUDE_DIR} ${INCLUDE_DIRECTORIES})
-target_link_libraries(ProjetIGSDApp ${CPPLOGGER_LIBRARY} 42ngine imgui)
+target_link_libraries(ProjetIGSDApp ${CPPLOGGER_LIBRARY} ${OPENCV_LIBS} 42ngine imgui)
 include(CPack)
 cotire(ProjetIGSD)
