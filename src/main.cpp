@@ -20,7 +20,7 @@ int main() {
     window->setInputMode(GLFW_STICKY_KEYS, GLFW_TRUE);
     window->setInputMode(GLFW_STICKY_MOUSE_BUTTONS, GLFW_TRUE);
     window->setInputMode(GLFW_RAW_MOUSE_MOTION, GLFW_TRUE);
-    //window->setInputMode(GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+    window->setInputMode(GLFW_CURSOR, GLFW_CURSOR_DISABLED);
     window->setEscapeToQuit(true);
 
     ftn::Application::SetClearColor(1.0f, 1.0f, 1.0f, 1.0f);
@@ -86,14 +86,15 @@ int main() {
     shader.addUniformMat4("u_Translate", glm::translate(model, glm::vec3(-500.f, -250.f, 0.f)));
     shader.addUniformMat4("u_Scale", model);
 
-    shader.addUniform3f("u_LightPos", glm::vec3(0.0, .0, 1000.f));
-    shader.addUniform3f("u_ViewPos", glm::vec3(0.0, .0, 1000.f));
     shader.addUniformMat4("u_FragModel", model * glm::translate(model, glm::vec3(-500.f, -350.f, 0.f)));
 
     ftn::Camera camera(glm::vec3(0.f, 0.f, 1000.f), 1000.f / 700.f);
     camera.setWindow(window);
 
     GLfloat lastTime = glfwGetTime();
+    GLfloat lastClick = glfwGetTime();
+
+    int teamSelected = -1;
 
     do {
 
@@ -104,10 +105,34 @@ int main() {
         camera.onUpdate(timeStep);
 
 
+        if(glfwGetKey(window->getWindow(), GLFW_KEY_UP) == GLFW_PRESS){
+            GLfloat currentClick = glfwGetTime();
+            if(currentClick - lastClick > 0.1){
+                lastClick = currentClick;
+                teamSelected--;
+                if(teamSelected < - 1){
+                    teamSelected = -1;
+                }
+            }
+        }
+
+        if(glfwGetKey(window->getWindow(), GLFW_KEY_DOWN) == GLFW_PRESS){
+            GLfloat currentClick = glfwGetTime();
+            if(currentClick - lastClick > 0.1){
+                lastClick = currentClick;
+                teamSelected++;
+                if(teamSelected > 20){
+                    teamSelected = 20;
+                }
+            }
+        }
+
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         shader.bind();
         shader.addUniformMat4("u_ViewProjection", camera.getViewProjection());
         shader.addUniform1i("u_Texture", 0);
+        shader.addUniform3f("u_LightPos", camera.getPosition());
+        shader.addUniform3f("u_ViewPos", camera.getPosition());
 
         glm::vec3 color(1.0f, 0.f, 0.f);
 
@@ -137,7 +162,14 @@ int main() {
                 color.g = 72.f / 255.f;
                 color.b = 0.f / 255.f;
             }
-            shader.addUniform3f("u_Color", color);
+
+            if (i == teamSelected) {
+                shader.addUniform3f("u_Color", glm::vec3(1.0f, 0.f, 1.0f));
+                shader.addUniformMat4("u_Translate", glm::translate(model, glm::vec3(-500.f, -250.f, 200.f)));
+            } else {
+                shader.addUniform3f("u_Color", color);
+                shader.addUniformMat4("u_Translate", glm::translate(model, glm::vec3(-500.f, -250.f, 0.f)));
+            }
 
             ftn::VertexArray::Bind(i);
             ftn::Texture::Bind(i);
