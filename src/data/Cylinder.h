@@ -32,7 +32,7 @@ public:
             const std::vector<GLfloat>& t_Texture,
             std::vector<GLfloat>& t_OutData);
 
-    static std::string texturePath(int teamNumber);
+    static const char * texturePath(int teamNumber);
 };
 
 

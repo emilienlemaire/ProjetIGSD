@@ -7,6 +7,7 @@
 #include <opencv2/opencv.hpp>
 #include <opencv2/core/core.hpp>
 #include <opencv2/highgui//highgui.hpp>
+#include <array>
 
 int main() {
 
@@ -33,47 +34,47 @@ int main() {
     Data* data = new Data("resources/data/rankspts.csv");
 
     window->setVSync(true);
+    ftn::VertexArray::Create(20);
+    ftn::VertexBuffer::Create(20);
+    ftn::IndexBuffer::Create(20);
+    ftn::Texture::Create(20);
+    std::array<int, 20> indicesSize;
 
-    std::vector<GLfloat> team;
-    std::vector<GLfloat> normals;
-    std::vector<GLfloat> depth;
-    std::vector<GLfloat> texture;
-    const Cylinder cylinder(0, data);
-    cylinder.makeCylinder(team, depth, texture);
-    Cylinder::makeNormals(team, normals);
+    for (int i = 0; i < cst::NB_TEAMS; ++i) {
+        std::vector<GLfloat> team;
+        std::vector<GLfloat> normals;
+        std::vector<GLfloat> depth;
+        std::vector<GLfloat> texture;
+        const Cylinder cylinder(i, data);
+        cylinder.makeCylinder(team, depth, texture);
+        Cylinder::makeNormals(team, normals);
 
-    displayTexture(texture);
+        std::vector<GLfloat> lane;
+        Cylinder::combineCylinder(team, normals, depth, texture, lane);
 
-    std::vector<GLfloat> lane;
-    Cylinder::combineCylinder(team, normals, depth, texture, lane);
+        std::vector<GLuint> indices;
+        std::vector<GLfloat> vertices;
+        ftn::IndexBuffer::IndexData(lane, indices, vertices);
 
 
-    std::vector<GLuint> indices;
-    std::vector<GLfloat> vertices;
-    ftn::IndexBuffer::IndexData(lane, indices, vertices);
+        ftn::VertexArray::Bind(i);
+        ftn::VertexBuffer::Bind(i);
 
-    ftn::VertexArray::Create(1);
+        ftn::VertexArray::SetLayout(i, {
+                {"in_Position", ftn::BufferAttribType::Float3},
+                {"in_Normals", ftn::BufferAttribType::Float3},
+                {"in_Depth", ftn::BufferAttribType::Float},
+                {"in_Texture", ftn::BufferAttribType::Float2}
+        });
 
-    ftn::VertexBuffer::Create(1);
-    ftn::IndexBuffer::Create(1);
+        ftn::VertexBuffer::Push<GLfloat>(vertices);
 
-    ftn::VertexArray::Bind(0);
-    ftn::VertexBuffer::Bind(0);
+        ftn::IndexBuffer::Bind(i);
+        ftn::IndexBuffer::Push<GLuint>(indices);
+        indicesSize[i] = indices.size();
 
-    ftn::VertexArray::SetLayout(0, {
-            {"in_Position", ftn::BufferAttribType::Float3},
-            {"in_Normals", ftn::BufferAttribType::Float3},
-            {"in_Depth", ftn::BufferAttribType::Float},
-            {"in_Texture", ftn::BufferAttribType::Float2}
-    });
-
-    ftn::VertexBuffer::Push<GLfloat>(vertices);
-
-    ftn::IndexBuffer::Bind(0);
-    ftn::IndexBuffer::Push<GLuint>(indices);
-
-    ftn::Texture::Create(1);
-    ftn::Texture::Push(0, "resources/textures/Man_City.png");
+        ftn::Texture::Push(i, Cylinder::texturePath(i));
+    }
 
 
     ///--Pour la selection de l'equipe--////////////////////////////////////////////////////
@@ -111,9 +112,12 @@ int main() {
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         shader.bind();
         shader.addUniformMat4("u_ViewProjection", camera.getViewProjection());
-        shader.addUniform1i("u_Texture", 0); //loctexture
-            glm::vec3 color(1.0f, 0.f, 0.f);
-            /*if (i == 0) {
+        shader.addUniform1i("u_Texture", 0);
+
+        glm::vec3 color(1.0f, 0.f, 0.f);
+
+        for (int i = 0; i < cst::NB_TEAMS; ++i) {
+            if (i == 0) {
                 color.r = 0.f;
                 color.g = 72.f / 255.f;
                 color.b = 204.f / 255.f;
@@ -137,13 +141,14 @@ int main() {
                 color.r = 204.f / 255.f;
                 color.g = 72.f / 255.f;
                 color.b = 0.f / 255.f;
-            }*/
+            }
             shader.addUniform3f("u_Color", color);
 
-            ftn::VertexArray::Bind(0);
-            ftn::Texture::Bind(0);
-            glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, nullptr);
-            window->update();
+            ftn::VertexArray::Bind(i);
+            ftn::Texture::Bind(i);
+            glDrawElements(GL_TRIANGLES, indicesSize[i], GL_UNSIGNED_INT, nullptr);
+        }
+        window->update();
     } while (!window->shouldClose());
 
     delete data;
