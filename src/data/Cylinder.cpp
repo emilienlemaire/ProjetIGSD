@@ -492,7 +492,7 @@ void Cylinder::combineCylinder(const std::vector<GLfloat> &t_Cylinder, const std
     }
 }
 
-std::string Cylinder::texturePath(int teamNumber) {
+const char * Cylinder::texturePath(int teamNumber) {
     switch (teamNumber){
         case 0:
             return "resources/textures/Man_City.png";
