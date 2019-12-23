@@ -2,11 +2,6 @@
 #include <42ngine/42ngine.h>
 #include <data/Data.h>
 #include <data/Cylinder.h>
-#include <string>
-#include <utils.h>
-#include <opencv2/opencv.hpp>
-#include <opencv2/core/core.hpp>
-#include <opencv2/highgui//highgui.hpp>
 #include <array>
 
 int main() {
@@ -38,7 +33,7 @@ int main() {
     ftn::VertexBuffer::Create(20);
     ftn::IndexBuffer::Create(20);
     ftn::Texture::Create(20);
-    std::array<int, 20> indicesSize;
+    std::array<int, 20> indicesSize{};
 
     for (int i = 0; i < cst::NB_TEAMS; ++i) {
         std::vector<GLfloat> team;
