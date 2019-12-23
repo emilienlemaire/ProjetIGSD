@@ -102,6 +102,13 @@ inline void displayPoint(std::vector<T> array, GLuint size){
     }
 }
 
+template <class T>
+inline void displayTexture(std::vector<T> array){
+    for (int i = 0; i < array.size(); i+=3) {
+        std::cout << " " << array[i] << " " << array[i + 1] << std::endl;
+    }
+}
+
 inline void combineArray(const GLfloat array1[], const GLfloat array2[], GLfloat result[], GLuint size1, GLuint size2){
     for (int i = 0; i < size1; ++i) {
         result[i] = array1[i];

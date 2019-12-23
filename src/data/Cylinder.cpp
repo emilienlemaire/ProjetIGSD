@@ -12,11 +12,13 @@ Cylinder::~Cylinder() {
     Log::Debug("Cylinder destructed");
 }
 
-void Cylinder::makeBackface(std::vector<GLfloat> &t_Backface, std::vector<GLfloat> &t_Depth) const{
+void Cylinder::makeBackface(std::vector<GLfloat> &t_Backface, std::vector<GLfloat> &t_Depth,
+                            std::vector<GLfloat> &t_Texture) const{
     t_Backface.clear();
     t_Depth.clear();
     std::vector<Day> teamData = m_Data->getTeam(m_TeamNumber);
     t_Backface.reserve(2 * teamData.size() * 18 - 18);
+    t_Depth.reserve(teamData.size() * 12 - 6);
     t_Depth.reserve(teamData.size() * 12 - 6);
 
     GLfloat largeur = (cst::F_WIDTH - 50.f) / (cst::NB_DAYS * 2.f);
@@ -131,13 +133,18 @@ void Cylinder::makeBackface(std::vector<GLfloat> &t_Backface, std::vector<GLfloa
             t_Depth.push_back(depth);
         }
     }
+    t_Texture.clear();
+    t_Texture.resize(2 * (t_Backface.size() / 3));
+    std::fill(t_Texture.begin(), t_Texture.end(), 0.f);
 }
 
-void Cylinder::makeCylinder(std::vector<GLfloat> &t_Cylinder, std::vector<GLfloat> &t_Depth) const {
+void Cylinder::makeCylinder(std::vector<GLfloat> &t_Cylinder, std::vector<GLfloat> &t_Depth,
+                            std::vector<GLfloat> &t_Texture) const {
 
-    makeBackface(t_Cylinder, t_Depth);
+    makeBackface(t_Cylinder, t_Depth, t_Texture);
 
     t_Cylinder.reserve(t_Cylinder.size() + 4 * (9 * cst::CYLINDER_DIVISION) + 2 * (cst::NB_DAYS * cst::CYLINDER_DIVISION * 2 * 9) - 4 * 18);
+    t_Texture.reserve(2 * t_Cylinder.capacity() / 3);
 
     GLfloat radius = glm::abs(t_Cylinder[1] - t_Cylinder[4]) / 2.f;
     GLfloat angle = glm::pi<GLfloat>() / (GLfloat)cst::CYLINDER_DIVISION;
@@ -162,6 +169,11 @@ void Cylinder::makeCylinder(std::vector<GLfloat> &t_Cylinder, std::vector<GLfloa
         t_Cylinder.push_back(yCenter + radius * glm::cos((float) (i + 1) * angle));
         t_Cylinder.push_back(radius * glm::sin((float) (i + 1) * angle));
         t_Depth.push_back(0);
+
+        // On ne veut pas de texture sur les cercles du côté.
+        for (int j = 0; j < 6; ++j) {
+            t_Texture.push_back(0.f);
+        }
     }
 
     //Cercle partie gauche centre
@@ -186,6 +198,11 @@ void Cylinder::makeCylinder(std::vector<GLfloat> &t_Cylinder, std::vector<GLfloa
         t_Cylinder.push_back(yCenter + radius * glm::cos((float) (i + 1) * angle));
         t_Cylinder.push_back(radius * glm::sin((float) (i + 1) * angle));
         t_Depth.push_back(0);
+
+        // On ne veut pas de texture sur les cercles du côté.
+        for (int j = 0; j < 6; ++j) {
+            t_Texture.push_back(0.f);
+        }
     }
 
     //Cercle partie droite centre
@@ -210,6 +227,11 @@ void Cylinder::makeCylinder(std::vector<GLfloat> &t_Cylinder, std::vector<GLfloa
         t_Cylinder.push_back(yCenter + radius * glm::cos((float) (i + 1) * angle));
         t_Cylinder.push_back(radius * glm::sin((float) (i + 1) * angle));
         t_Depth.push_back(0);
+
+        // On ne veut pas de texture sur les cercles du côté.
+        for (int j = 0; j < 6; ++j) {
+            t_Texture.push_back(0.f);
+        }
     }
 
     //Cercle partie droite extrémité
@@ -234,6 +256,11 @@ void Cylinder::makeCylinder(std::vector<GLfloat> &t_Cylinder, std::vector<GLfloa
         t_Cylinder.push_back(yCenter + radius * glm::cos((float) (i + 1) * angle));
         t_Cylinder.push_back(radius * glm::sin((float) (i + 1) * angle));
         t_Depth.push_back(0);
+
+        // On ne veut pas de texture sur les cercles du côté.
+        for (int j = 0; j < 6; ++j) {
+            t_Texture.push_back(0.f);
+        }
     }
 
     //Corps du cylindre
@@ -255,25 +282,38 @@ void Cylinder::makeCylinder(std::vector<GLfloat> &t_Cylinder, std::vector<GLfloa
         GLfloat yHaut = (((19.f - (float) day.rank) / 19.f) + ((float) day.points / cst::MAX_POINTS)) * (cst::F_HEIGHT / 2.2f) + cst::LINE_HEIGHT;
         yCenter = (yHaut + yBas) /  2.f;
 
+        //Offset des textures.
+        GLfloat textureOffset = 0.f;
+        if( i%4 == 1) textureOffset = 0.25f;
+        if( i%4 == 2) textureOffset = 0.50f;
+        if( i%4 == 3) textureOffset = 0.75f;
+
         for (int j = 0; j < cst::CYLINDER_DIVISION ; ++j) {
+            GLfloat jConjugate = cst::CYLINDER_DIVISION - j;
             //Triangle 1
             //Bas gauche
             t_Cylinder.push_back(xGauche);
             t_Cylinder.push_back(yCenter + radius * glm::cos((float)j * angle));
             t_Cylinder.push_back(radius * glm::sin((float)j * angle));
             t_Depth.push_back(0);
+            t_Texture.push_back(textureOffset);
+            t_Texture.push_back(((float)jConjugate - 1.f) / (float)cst::CYLINDER_DIVISION);
 
             //Haut gauche
             t_Cylinder.push_back(xGauche);
             t_Cylinder.push_back(yCenter + radius * glm::cos((float)(j + 1) * angle));
             t_Cylinder.push_back(radius * glm::sin((float)(j + 1) * angle));
             t_Depth.push_back(0);
+            t_Texture.push_back(textureOffset);
+            t_Texture.push_back((float)jConjugate / (float)cst::CYLINDER_DIVISION);
 
             //Bas droite
             t_Cylinder.push_back(xDroit);
             t_Cylinder.push_back(yCenter + radius * glm::cos((float)j * angle));
             t_Cylinder.push_back(radius * glm::sin((float)j * angle));
             t_Depth.push_back(0);
+            t_Texture.push_back(textureOffset + 0.125f);
+            t_Texture.push_back(((float)jConjugate - 1.f) / (float)cst::CYLINDER_DIVISION);
 
             //Triangle 2
             //Haut gauche
@@ -281,18 +321,24 @@ void Cylinder::makeCylinder(std::vector<GLfloat> &t_Cylinder, std::vector<GLfloa
             t_Cylinder.push_back(yCenter + radius * glm::cos((float)(j + 1) * angle));
             t_Cylinder.push_back(radius * glm::sin((float)(j + 1) * angle));
             t_Depth.push_back(0);
+            t_Texture.push_back(textureOffset);
+            t_Texture.push_back((float)jConjugate / (float)cst::CYLINDER_DIVISION);
 
             //Bas droite
             t_Cylinder.push_back(xDroit);
             t_Cylinder.push_back(yCenter + radius * glm::cos((float)(j + 1) * angle));
             t_Cylinder.push_back(radius * glm::sin((float)(j + 1) * angle));
             t_Depth.push_back(0);
+            t_Texture.push_back(textureOffset + 0.125f);
+            t_Texture.push_back(((float)jConjugate - 1.f) / (float)cst::CYLINDER_DIVISION);
 
             //Haut droite
             t_Cylinder.push_back(xDroit);
             t_Cylinder.push_back(yCenter + radius * glm::cos((float)j * angle));
             t_Cylinder.push_back(radius * glm::sin((float)j * angle));
             t_Depth.push_back(0);
+            t_Texture.push_back(textureOffset + 0.125f);
+            t_Texture.push_back((float)jConjugate / (float)cst::CYLINDER_DIVISION);
         }
 
         //Connexion avec le jour suivant
@@ -315,44 +361,64 @@ void Cylinder::makeCylinder(std::vector<GLfloat> &t_Cylinder, std::vector<GLfloa
             if( nextDay.rank > day.rank)
                 depth = 1;
 
+            textureOffset += 0.125f;
             for (int j = 0; j < cst::CYLINDER_DIVISION; ++j) {
+                GLfloat jConjugate = cst::CYLINDER_DIVISION - j;
                 //Triangle 1
+                //Bas gauche
                 t_Cylinder.push_back(xGauche);
                 t_Cylinder.push_back(yCentreGauche + radius * glm::cos((float)j * angle));
                 t_Cylinder.push_back(radius * glm::sin((float)j * angle));
                 t_Depth.push_back(depth);
+                t_Texture.push_back(textureOffset);
+                t_Texture.push_back(((float)jConjugate - 1.f) / (float)cst::CYLINDER_DIVISION);
 
+                //Haut gauche
                 t_Cylinder.push_back(xGauche);
                 t_Cylinder.push_back(yCentreGauche + radius * glm::cos((float)(j + 1) * angle));
                 t_Cylinder.push_back(radius * glm::sin((float)(j + 1) * angle));
                 t_Depth.push_back(depth);
+                t_Texture.push_back(textureOffset);
+                t_Texture.push_back((float)jConjugate / (float)cst::CYLINDER_DIVISION);
 
+                //Bas droite
                 t_Cylinder.push_back(xDroit);
                 t_Cylinder.push_back(yCentreDroit + radius * glm::cos((float)j * angle));
                 t_Cylinder.push_back(radius * glm::sin((float)j * angle));
                 t_Depth.push_back(depth);
+                t_Texture.push_back(textureOffset + 0.125f);
+                t_Texture.push_back(((float)jConjugate - 1.f) / (float)cst::CYLINDER_DIVISION);
 
                 //Triangle 2
+                //Haut gauche
                 t_Cylinder.push_back(xGauche);
                 t_Cylinder.push_back(yCentreGauche + radius * glm::cos((float)(j + 1) * angle));
                 t_Cylinder.push_back(radius * glm::sin((float)(j + 1) * angle));
                 t_Depth.push_back(depth);
+                t_Texture.push_back(textureOffset);
+                t_Texture.push_back((float)jConjugate / (float)cst::CYLINDER_DIVISION);
 
+                //Bas droite
                 t_Cylinder.push_back(xDroit);
                 t_Cylinder.push_back(yCentreDroit + radius * glm::cos((float)(j + 1) * angle));
                 t_Cylinder.push_back(radius * glm::sin((float)(j + 1) * angle));
                 t_Depth.push_back(depth);
+                t_Texture.push_back(textureOffset + 0.125f);
+                t_Texture.push_back(((float)jConjugate - 1.f) / (float)cst::CYLINDER_DIVISION);
 
+                //Haut droite
                 t_Cylinder.push_back(xDroit);
                 t_Cylinder.push_back(yCentreDroit + radius * glm::cos((float)j * angle));
                 t_Cylinder.push_back(radius * glm::sin((float)j * angle));
                 t_Depth.push_back(depth);
+                t_Texture.push_back(textureOffset + 0.125f);
+                t_Texture.push_back((float)jConjugate / (float)cst::CYLINDER_DIVISION);
             }
         }
     }
 }
 
-void Cylinder::makeNormals(const std::vector<GLfloat> &t_Cylinder, std::vector<GLfloat> &t_OutNormals) const {
+void Cylinder::makeNormals(const std::vector<GLfloat> &t_Cylinder, std::vector<GLfloat> &t_OutNormals) {
     t_OutNormals.reserve(t_Cylinder.size());
 
     //1 triangle = 9 coordonnées
@@ -406,7 +472,8 @@ void Cylinder::makeNormals(const std::vector<GLfloat> &t_Cylinder, std::vector<G
 }
 
 void Cylinder::combineCylinder(const std::vector<GLfloat> &t_Cylinder, const std::vector<GLfloat> &t_Normals,
-                               const std::vector<GLfloat> &t_Depth, std::vector<GLfloat>& t_OutData) {
+                               const std::vector<GLfloat> &t_Depth, const std::vector<GLfloat> &t_Texture,
+                               std::vector<GLfloat>& t_OutData) {
     t_OutData.clear();
     t_OutData.reserve(t_Cylinder.size() + t_Normals.size());
     for (int i = 0; i < t_Cylinder.size(); i += 3) {
@@ -419,5 +486,57 @@ void Cylinder::combineCylinder(const std::vector<GLfloat> &t_Cylinder, const std
         t_OutData.push_back(t_Normals[i + 2]);
 
         t_OutData.push_back(t_Depth[i / 3]);
+
+        t_OutData.push_back(t_Texture[(2 * i / 3) + 0]);
+        t_OutData.push_back(t_Texture[(2 * i / 3) + 1]);
     }
 }
+
+std::string Cylinder::texturePath(int teamNumber) {
+    switch (teamNumber){
+        case 0:
+            return "resources/textures/Man_City.png";
+        case 1:
+            return "resources/textures/Liverpool.png";
+        case 2:
+            return "resources/textures/Chelsea.png";
+        case 3:
+            return "resources/textures/Tottenham.png";
+        case 4:
+            return "resources/textures/Arsenal.png";
+        case 5:
+            return "resources/textures/Man_United.png";
+        case 6:
+            return "resources/textures/Wolves.png";
+        case 7:
+            return "resources/textures/Everton.png";
+        case 8:
+            return "resources/textures/Leicester.png";
+        case 9:
+            return "resources/textures/West_Ham.png";
+        case 10:
+            return "resources/textures/Watford.png";
+        case 11:
+            return "resources/textures/Crystal_Palace.png";
+        case 12:
+            return "resources/textures/Newcastle.png";
+        case 13:
+            return "resources/textures/Bournemouth.png";
+        case 14:
+            return "resources/textures/Burnley.png";
+        case 15:
+            return "resources/textures/Southampton.png";
+        case 16:
+            return "resources/textures/Brighton.png";
+        case 17:
+            return "resources/textures/Cardiff.png";
+        case 18:
+            return "resources/textures/Fulham.png";
+        case 19 :
+            return "resources/textures/Huddersfield.png";
+        default:
+            Log::Fatal("Invalid team number");
+    }
+}
+
+

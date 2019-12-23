@@ -3,7 +3,10 @@
 #include <data/Data.h>
 #include <data/Cylinder.h>
 #include <string>
-
+#include <utils.h>
+#include <opencv2/opencv.hpp>
+#include <opencv2/core/core.hpp>
+#include <opencv2/highgui//highgui.hpp>
 
 int main() {
 
@@ -32,14 +35,17 @@ int main() {
     window->setVSync(true);
 
     std::vector<GLfloat> team;
-    std::vector<GLfloat> depth;
     std::vector<GLfloat> normals;
+    std::vector<GLfloat> depth;
+    std::vector<GLfloat> texture;
     const Cylinder cylinder(0, data);
-    cylinder.makeCylinder(team, depth);
-    cylinder.makeNormals(team, normals);
+    cylinder.makeCylinder(team, depth, texture);
+    Cylinder::makeNormals(team, normals);
+
+    displayTexture(texture);
 
     std::vector<GLfloat> lane;
-    Cylinder::combineCylinder(team, normals, depth, lane);
+    Cylinder::combineCylinder(team, normals, depth, texture, lane);
 
 
     std::vector<GLuint> indices;
@@ -57,13 +63,17 @@ int main() {
     ftn::VertexArray::SetLayout(0, {
             {"in_Position", ftn::BufferAttribType::Float3},
             {"in_Normals", ftn::BufferAttribType::Float3},
-            {"in_Depth", ftn::BufferAttribType::Float}
+            {"in_Depth", ftn::BufferAttribType::Float},
+            {"in_Texture", ftn::BufferAttribType::Float2}
     });
 
     ftn::VertexBuffer::Push<GLfloat>(vertices);
 
     ftn::IndexBuffer::Bind(0);
     ftn::IndexBuffer::Push<GLuint>(indices);
+
+    ftn::Texture::Create(1);
+    ftn::Texture::Push(0, "resources/textures/Man_City.png");
 
 
     ///--Pour la selection de l'equipe--////////////////////////////////////////////////////
@@ -76,12 +86,6 @@ int main() {
     ftn::Shader shader("resources/shaders/VertexShader.glsl", "resources/shaders/FragmentShader.glsl");
 
     shader.bind();
-    shader.addUniformMat4("u_ViewProjection", glm::perspective(glm::radians(45.f), 1000.f / 700.f, 0.1f, 2000.f)
-                                                                * glm::lookAt(
-                                                                        glm::vec3(0.f, 0.f, 1000.f),
-                                                                        glm::vec3(0.f, 0.f, 0.f),
-                                                                        glm::vec3(0.f, 1.f, 0.f)
-                                                                        ));
 
     shader.addUniformMat4("u_Translate", glm::translate(model, glm::vec3(-500.f, -250.f, 0.f)));
     shader.addUniformMat4("u_Scale", model);
@@ -90,10 +94,24 @@ int main() {
     shader.addUniform3f("u_ViewPos", glm::vec3(0.0, .0, 1000.f));
     shader.addUniformMat4("u_FragModel", model * glm::translate(model, glm::vec3(-500.f, -350.f, 0.f)));
 
+    ftn::Camera camera(glm::vec3(0.f, 0.f, 1000.f), 1000.f / 700.f);
+    camera.setWindow(window);
+
+    GLfloat lastTime = glfwGetTime();
+
     do {
+
+        auto now = (float)glfwGetTime();
+        float timeStep = now - lastTime;
+        lastTime = now;
+
+        camera.onUpdate(timeStep);
+
 
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
         shader.bind();
+        shader.addUniformMat4("u_ViewProjection", camera.getViewProjection());
+        shader.addUniform1i("u_Texture", 0); //loctexture
             glm::vec3 color(1.0f, 0.f, 0.f);
             /*if (i == 0) {
                 color.r = 0.f;
@@ -123,6 +141,7 @@ int main() {
             shader.addUniform3f("u_Color", color);
 
             ftn::VertexArray::Bind(0);
+            ftn::Texture::Bind(0);
             glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, nullptr);
             window->update();
     } while (!window->shouldClose());
