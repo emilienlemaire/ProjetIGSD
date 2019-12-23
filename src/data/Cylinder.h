@@ -31,6 +31,8 @@ public:
             const std::vector<GLfloat>& t_Depth,
             const std::vector<GLfloat>& t_Texture,
             std::vector<GLfloat>& t_OutData);
+
+    static std::string texturePath(int teamNumber);
 };
 
 

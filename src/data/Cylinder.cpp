@@ -282,8 +282,7 @@ void Cylinder::makeCylinder(std::vector<GLfloat> &t_Cylinder, std::vector<GLfloa
         GLfloat yHaut = (((19.f - (float) day.rank) / 19.f) + ((float) day.points / cst::MAX_POINTS)) * (cst::F_HEIGHT / 2.2f) + cst::LINE_HEIGHT;
         yCenter = (yHaut + yBas) /  2.f;
 
-        //Texture ou non.
-        bool displayTexture = true;
+        //Offset des textures.
         GLfloat textureOffset = 0.f;
         if( i%4 == 1) textureOffset = 0.25f;
         if( i%4 == 2) textureOffset = 0.50f;
@@ -492,3 +491,52 @@ void Cylinder::combineCylinder(const std::vector<GLfloat> &t_Cylinder, const std
         t_OutData.push_back(t_Texture[(2 * i / 3) + 1]);
     }
 }
+
+std::string Cylinder::texturePath(int teamNumber) {
+    switch (teamNumber){
+        case 0:
+            return "resources/textures/Man_City.png";
+        case 1:
+            return "resources/textures/Liverpool.png";
+        case 2:
+            return "resources/textures/Chelsea.png";
+        case 3:
+            return "resources/textures/Tottenham.png";
+        case 4:
+            return "resources/textures/Arsenal.png";
+        case 5:
+            return "resources/textures/Man_United.png";
+        case 6:
+            return "resources/textures/Wolves.png";
+        case 7:
+            return "resources/textures/Everton.png";
+        case 8:
+            return "resources/textures/Leicester.png";
+        case 9:
+            return "resources/textures/West_Ham.png";
+        case 10:
+            return "resources/textures/Watford.png";
+        case 11:
+            return "resources/textures/Crystal_Palace.png";
+        case 12:
+            return "resources/textures/Newcastle.png";
+        case 13:
+            return "resources/textures/Bournemouth.png";
+        case 14:
+            return "resources/textures/Burnley.png";
+        case 15:
+            return "resources/textures/Southampton.png";
+        case 16:
+            return "resources/textures/Brighton.png";
+        case 17:
+            return "resources/textures/Cardiff.png";
+        case 18:
+            return "resources/textures/Fulham.png";
+        case 19 :
+            return "resources/textures/Huddersfield.png";
+        default:
+            Log::Fatal("Invalid team number");
+    }
+}
+
+

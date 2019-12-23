@@ -72,39 +72,9 @@ int main() {
     ftn::IndexBuffer::Bind(0);
     ftn::IndexBuffer::Push<GLuint>(indices);
 
+    ftn::Texture::Create(1);
+    ftn::Texture::Push(0, "resources/textures/Man_City.png");
 
-    ///---Textures---///////////////////////////////////////////////////////////////////////
-    // TODO:
-    //  * Texture abstraction;
-
-    GLuint texID;
-    cv::Mat image = cv::imread("resources/textures/Man_City.png", CV_LOAD_IMAGE_UNCHANGED);
-    cv::flip(image, image, 0);
-    glGenTextures(1, &texID);
-    glBindTexture(
-            GL_TEXTURE_2D,
-            texID
-    );
-    glTexImage2D(
-            GL_TEXTURE_2D,
-            0,
-            GL_RGBA,
-            image.cols,
-            image.rows,
-            0,
-            GL_BGRA,
-            GL_UNSIGNED_BYTE,
-            image.ptr()
-            );
-
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-
-    glBindTexture(GL_TEXTURE_2D, 0);
-
-    ////////////////////////////////////////////////////////////////////////////////////////
 
     ///--Pour la selection de l'equipe--////////////////////////////////////////////////////
     //TODO
@@ -171,8 +141,7 @@ int main() {
             shader.addUniform3f("u_Color", color);
 
             ftn::VertexArray::Bind(0);
-            glActiveTexture(GL_TEXTURE0);
-            glBindTexture(GL_TEXTURE_2D, texID);
+            ftn::Texture::Bind(0);
             glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, nullptr);
             window->update();
     } while (!window->shouldClose());
