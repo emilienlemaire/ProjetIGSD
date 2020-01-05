@@ -14,6 +14,8 @@ set(OPENCV_LIBS /usr/local/Cellar/opencv@2/2.4.13.7_5/lib/libopencv_core.dylib
         /usr/local/Cellar/opencv@2/2.4.13.7_5/lib/libopencv_imgproc.dylib
         /usr/local/Cellar/opencv@2/2.4.13.7_5/lib/libopencv_highgui.dylib)
 
+file(COPY resources DESTINATION ${CMAKE_BINARY_DIR})
+
 add_executable(ProjetIGSD
         src/main.cpp
         includes/debugbreak.h
