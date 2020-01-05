@@ -179,6 +179,7 @@ int main() {
     } while (!window->shouldClose());
 
     delete data;
+    ftn::Texture::Destroy();
     ftn::VertexArray::Destroy();
     ftn::Application::Destroy();
     return 0;
