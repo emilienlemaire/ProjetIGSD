@@ -6,11 +6,11 @@
 
 Data::Data(const std::string& t_Path)
 {
-    Log::Debug("Data constructing");
+    Log::Debug("Projet IGSD", "Data constructing");
     std::ifstream file(t_Path);
 
     if (!file.good()){
-        Log::Error("The file " + t_Path + " couldn't be open");
+        Log::Error("Projet IGSD", "The file " + t_Path + " couldn't be open");
         std::exit(EXIT_FAILURE);
     }
 
@@ -56,5 +56,5 @@ std::vector<Day> Data::getTeam(unsigned int t_Team) const {
 
 Data::~Data(){
     delete m_RanksPoints;
-    Log::Debug("Data destructed");
+    Log::Debug("Projet IGSD", "Data destroyed");
 }

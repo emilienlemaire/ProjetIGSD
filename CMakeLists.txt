@@ -24,7 +24,5 @@ add_executable(ProjetIGSD
         src/data/Cylinder.cpp
         src/data/Cylinder.h)
 
-find_package(CppLogger REQUIRED)
-
-target_include_directories(ProjetIGSD PUBLIC ${CPPLOGGER_INCLUDE_DIR} ${INCLUDE_DIRECTORIES})
-target_link_libraries(ProjetIGSD ${CPPLOGGER_LIBRARY} ${OPENCV_LIBS} 42ngine imgui)
+target_include_directories(ProjetIGSD PUBLIC ${INCLUDE_DIRECTORIES})
+target_link_libraries(ProjetIGSD ${OPENCV_LIBS} 42ngine imgui)

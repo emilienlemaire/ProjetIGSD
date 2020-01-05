@@ -1,4 +1,3 @@
-#include <Log.h>
 #include <42ngine/42ngine.h>
 #include <data/Data.h>
 #include <data/Cylinder.h>
@@ -6,7 +5,7 @@
 
 int main() {
 
-    Log::setLevel(Log::LevelDebug);
+    Log::createConsole("Projet IGSD", Log::LevelDebug);
 
     ftn::Application::Init();
 

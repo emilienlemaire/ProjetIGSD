@@ -5,11 +5,11 @@
 #include "Cylinder.h"
 
 Cylinder::Cylinder(int t_TeamNumber, Data *t_Data) : m_TeamNumber(t_TeamNumber), m_Data(t_Data) {
-    Log::Debug("Cylinder constructed");
+    Log::Debug("Projet IGSD", "Cylinder constructed");
 }
 
 Cylinder::~Cylinder() {
-    Log::Debug("Cylinder destructed");
+    Log::Debug("Projet IGSD", "Cylinder destroyed");
 }
 
 void Cylinder::makeBackface(std::vector<GLfloat> &t_Backface, std::vector<GLfloat> &t_Depth,
@@ -535,7 +535,7 @@ const char * Cylinder::texturePath(int teamNumber) {
         case 19 :
             return "resources/textures/Huddersfield.png";
         default:
-            Log::Fatal("Invalid team number");
+            Log::Fatal("Projet IGSD", "Invalid team number");
     }
 }
 
