@@ -28,22 +28,3 @@ find_package(CppLogger REQUIRED)
 
 target_include_directories(ProjetIGSD PUBLIC ${CPPLOGGER_INCLUDE_DIR} ${INCLUDE_DIRECTORIES})
 target_link_libraries(ProjetIGSD ${CPPLOGGER_LIBRARY} ${OPENCV_LIBS} 42ngine imgui)
-
-add_executable(ProjetIGSDApp MACOSX_BUNDLE
-        src/main.cpp
-        src/data/Data.cpp
-        src/data/Data.h
-        src/data/Cylinder.cpp
-        src/data/Cylinder.h
-        resources/data/rankspts.csv)
-
-set_source_files_properties(
-  resources/data/rankspts.csv
-  PROPERTIES
-  MACOSX_PACKAGE_LOCATION Resources
-  )
-
-target_include_directories(ProjetIGSDApp PUBLIC ${CPPLOGGER_INCLUDE_DIR} ${INCLUDE_DIRECTORIES})
-target_link_libraries(ProjetIGSDApp ${CPPLOGGER_LIBRARY} ${OPENCV_LIBS} 42ngine imgui)
-include(CPack)
-cotire(ProjetIGSD)
