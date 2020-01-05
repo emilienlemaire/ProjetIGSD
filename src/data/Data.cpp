@@ -7,7 +7,10 @@
 Data::Data(const std::string& t_Path)
 {
     Log::Debug("Projet IGSD", "Data constructing");
+
+    //On récupère le fichier de données.
     std::ifstream file(t_Path);
+
 
     if (!file.good()){
         Log::Error("Projet IGSD", "The file " + t_Path + " couldn't be open");
@@ -24,7 +27,7 @@ Data::Data(const std::string& t_Path)
         iss << line;
         std::string column;
         std::vector<Day, std::allocator<Day>> days(cst::NB_DAYS);
-        //On ignore la première ligne;
+        //On ignore la première colonne;
         std::getline(iss, column, comma);
         for (int i = 0; i < cst::NB_DAYS; ++i) {
             Day day{};

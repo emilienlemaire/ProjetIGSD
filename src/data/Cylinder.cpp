@@ -12,17 +12,22 @@ Cylinder::~Cylinder() {
     Log::Debug("Projet IGSD", "Cylinder destroyed");
 }
 
+//Fonction qui crée la partie platte du cylindre.
 void Cylinder::makeBackface(std::vector<GLfloat> &t_Backface, std::vector<GLfloat> &t_Depth,
                             std::vector<GLfloat> &t_Texture) const{
+    //On s'assure qu'il n'y a pas de données parasites dans les vectors
     t_Backface.clear();
     t_Depth.clear();
     std::vector<Day> teamData = m_Data->getTeam(m_TeamNumber);
+
+    //On réserve la place nécessaire aux données afin d'eviter des changements d'adresse mémoire inutiles
     t_Backface.reserve(2 * teamData.size() * 18 - 18);
-    t_Depth.reserve(teamData.size() * 12 - 6);
     t_Depth.reserve(teamData.size() * 12 - 6);
 
     GLfloat largeur = (cst::F_WIDTH - 50.f) / (cst::NB_DAYS * 2.f);
     GLfloat dx = 50.f;
+
+    //On crée 4 triangles par jour
     for (unsigned long i = 0; i < teamData.size(); ++i) {
         Day day = teamData[i];
         Day nextDay = teamData[i + 1];
@@ -78,11 +83,11 @@ void Cylinder::makeBackface(std::vector<GLfloat> &t_Backface, std::vector<GLfloa
         t_Backface.push_back(0);
         t_Depth.push_back(0);
 
+        //Connexion au jour suivant
         if (i != teamData.size() - 1){
             unsigned short depth = 0;
             if(nextDay.rank > day.rank)
                 depth = 1;
-            //Connexion suivant
             //Triangle 1
             //Bas gauche
             t_Backface.push_back(dx + (2.f * (float) i + 1.f) * largeur);
@@ -138,11 +143,13 @@ void Cylinder::makeBackface(std::vector<GLfloat> &t_Backface, std::vector<GLfloa
     std::fill(t_Texture.begin(), t_Texture.end(), 0.f);
 }
 
+//Fonction qui crée tout le cylindre
 void Cylinder::makeCylinder(std::vector<GLfloat> &t_Cylinder, std::vector<GLfloat> &t_Depth,
                             std::vector<GLfloat> &t_Texture) const {
 
     makeBackface(t_Cylinder, t_Depth, t_Texture);
 
+    //On reserve la place nécessaire aux données dans la mémoire afin d'éviter des changements d'adresse mémoire inutiles
     t_Cylinder.reserve(t_Cylinder.size() + 4 * (9 * cst::CYLINDER_DIVISION) + 2 * (cst::NB_DAYS * cst::CYLINDER_DIVISION * 2 * 9) - 4 * 18);
     t_Texture.reserve(2 * t_Cylinder.capacity() / 3);
 
@@ -282,7 +289,7 @@ void Cylinder::makeCylinder(std::vector<GLfloat> &t_Cylinder, std::vector<GLfloa
         GLfloat yHaut = (((19.f - (float) day.rank) / 19.f) + ((float) day.points / cst::MAX_POINTS)) * (cst::F_HEIGHT / 2.2f) + cst::LINE_HEIGHT;
         yCenter = (yHaut + yBas) /  2.f;
 
-        //Offset des textures.
+        //Offset des textures afin qu'une texture couvre 2 jours.
         GLfloat textureOffset = 0.f;
         if( i%4 == 1) textureOffset = 0.25f;
         if( i%4 == 2) textureOffset = 0.50f;
@@ -435,6 +442,8 @@ void Cylinder::makeNormals(const std::vector<GLfloat> &t_Cylinder, std::vector<G
         GLfloat y3 = t_Cylinder[(9 * i) + 7];
         GLfloat z3 = t_Cylinder[(9 * i) + 8];
 
+        //Les normales sont de signe opposées pour la surface arrière.
+        //La surface arrière contient 158 triangles.
         if (i < 158){
             glm::vec3 A(x1, y1, z1), B(x2, y2, z2), C(x3, y3, z3);
             glm::vec3 normal = glm::cross(C - A, B - A);
@@ -471,6 +480,8 @@ void Cylinder::makeNormals(const std::vector<GLfloat> &t_Cylinder, std::vector<G
     }
 }
 
+//On combine les vectors sous la forme suivante:
+// pointX, pointY, pointZ, normalX, normalY, normalZ, depth, textureU, textureV
 void Cylinder::combineCylinder(const std::vector<GLfloat> &t_Cylinder, const std::vector<GLfloat> &t_Normals,
                                const std::vector<GLfloat> &t_Depth, const std::vector<GLfloat> &t_Texture,
                                std::vector<GLfloat>& t_OutData) {
@@ -492,6 +503,7 @@ void Cylinder::combineCylinder(const std::vector<GLfloat> &t_Cylinder, const std
     }
 }
 
+//Renvoie le chemin vers la texture en fonction du numéro de l'équipe.
 const char * Cylinder::texturePath(int teamNumber) {
     switch (teamNumber){
         case 0:
@@ -536,6 +548,7 @@ const char * Cylinder::texturePath(int teamNumber) {
             return "resources/textures/Huddersfield.png";
         default:
             Log::Fatal("Projet IGSD", "Invalid team number");
+            return nullptr; //Afin d'éviter les avertissement du compilateur
     }
 }
 
